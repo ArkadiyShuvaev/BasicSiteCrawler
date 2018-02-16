@@ -81,15 +81,8 @@ namespace BasicSiteCrawler.Services
 				AddLinkToStorage(uri, localLink);
 			}
 
-			var rootUrl = _storage.Add(GetPathFromUri(uri));
-			_storage.MarkUrlAsCrawled(rootUrl.Id);
+			AddLinkToStorage(uri, uri.LocalPath);
 		}
-
-		private static string GetPathFromUri(Uri uri)
-		{
-			return uri.Authority + uri.LocalPath;
-		}
-
 		
 		private void ProcessUnfinishedUrls()
 		{
