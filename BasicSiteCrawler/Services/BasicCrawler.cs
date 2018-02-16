@@ -117,7 +117,7 @@ namespace BasicSiteCrawler.Services
 
 		private void ProcessUnfinishedUrls()
 		{
-			while (_storage.AreUncrawledUrlsExist())
+			while (_storage.IsUncrawledQueueEmpty)
 			{
 				var unprocessedUrls = _storage.GetUncrawledUrls().ToList();
 				if (unprocessedUrls.Count == 0)

@@ -56,10 +56,7 @@ namespace BasicSiteCrawler.Services
 			return _urls.Where(u => !u.IsCrawled);
 		}
 
-		public bool AreUncrawledUrlsExist()
-		{
-			return _urls.Any(u => u.IsCrawled == false);
-		}
+		public bool IsUncrawledQueueEmpty => _urls.Any(u => u.IsCrawled == false);
 
 		public bool IsCrawled(int id)
 		{
