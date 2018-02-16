@@ -13,7 +13,7 @@ namespace BasicSiteCrawler.Services
 		private readonly ILogger _logger;
 		private readonly IHtmlParser _htmlParser;
 		private readonly IUrlStorage _storage;
-		private string _currentScheme;
+		//private string _currentScheme;
 		private readonly IOutputWriter _simpleOutputWriter;
 
 		public BasicCrawler(INetworkProvider networkProvider, ILogger logger, IHtmlParser htmlParser, 
@@ -46,50 +46,75 @@ namespace BasicSiteCrawler.Services
 				_logger.WriteError(message);
 				throw new Exception(message);
 			}
-			_currentScheme = uri.Scheme;
-
+			
 			ProcessRootUri(uri);
 			ProcessUnfinishedUrls();
 			
-
-			WriteCrawlResultsToStream();
-		}
-
-		private void WriteCrawlResultsToStream()
-		{
-			var result = _storage.GetUrlsAndMarkAsSaved(_currentScheme);
-
-			foreach (var item in result)
-			{
-				_simpleOutputWriter.WriteLine(item);
-			}
+			
 		}
 		
 
 		private void ProcessRootUri(Uri uri)
 		{
-			List<string> childrenLinks;
-			var result = TryGetLinksFromRemotePage(uri, out childrenLinks);
-
-			if (!result)
+			if (!ProcessUriAndReturnOperationResultAsBool(uri))
 			{
 				return;
 			}
 
-			foreach (var localPath in childrenLinks)
-			{
-				_storage.Add(CrawlingUrlForCreationHelpers.CreateFromLocalPath(uri, localPath));
-			}
-
 			var crawlingUrl = _storage.Add(CrawlingUrlForCreationHelpers.CreateFromUri(uri));
-			if (crawlingUrl.Id > 0)
+			if (crawlingUrl != null)
 			{
 				_storage.MarkUrlAsCrawled(crawlingUrl.Id);
+				WriteToStreamAndMarkAsProcessed(crawlingUrl.Id);
 			}
 			
 		}
 		
-		
+		private void ProcessCrawlingUrl(CrawlingUrl crawlingUrl)
+		{
+			if (_storage.IsCrawled(crawlingUrl.Id))
+			{
+				return;
+			}
+
+			var url = crawlingUrl.ToString();
+			Uri uri;
+			var parseResult = Uri.TryCreate(url, UriKind.Absolute, out uri);
+
+			if (!parseResult)
+			{
+				_logger.WriteWarning($"The '{url}' url cannot be processed.");
+				return;
+			}
+
+			if (!ProcessUriAndReturnOperationResultAsBool(uri))
+			{
+				return;
+			}
+
+			_storage.MarkUrlAsCrawled(crawlingUrl.Id);
+
+			WriteToStreamAndMarkAsProcessed(crawlingUrl.Id);
+		}
+
+		private bool ProcessUriAndReturnOperationResultAsBool(Uri uri)
+		{
+			List<string> localPaths;
+			var isGetLinksSucceeded = TryGetLinksFromRemotePage(uri, out localPaths);
+
+			if (!isGetLinksSucceeded)
+			{
+				_logger.WriteWarning($"The '{uri.ToString()}' url cannot be processed.");
+				return false;
+			}
+
+			foreach (var localPath in localPaths)
+			{
+				_storage.Add(CrawlingUrlForCreationHelpers.CreateFromLocalPath(uri, localPath));
+			}
+			return true;
+		}
+
 		private void ProcessUnfinishedUrls()
 		{
 			while (_storage.AreUncrawledUrlsExist())
@@ -108,44 +133,18 @@ namespace BasicSiteCrawler.Services
 				}
 
 				Task.WaitAll(tasks.ToArray());
-
 			}
 			
-		}
-
-		private void ProcessCrawlingUrl(CrawlingUrl crawlingUrl)
-		{
-			if (_storage.IsCrawled(crawlingUrl.Id))
-			{
-				return;
-			}
-
-			var url = crawlingUrl.ConvertToFullUrl(_currentScheme);
-			Uri uri;
-			var result = Uri.TryCreate(url, UriKind.Absolute, out uri);
-
-			if (!result)
-			{
-				_logger.WriteWarning($"The '{url}' url cannot be processed.");
-			}
-			
-			List<string> localPaths;
-			var getLinksResult = TryGetLinksFromRemotePage(uri, out localPaths);
-
-			if (getLinksResult)
-			{
-				foreach (var localPath in localPaths)
-				{
-					_storage.Add(CrawlingUrlForCreationHelpers.CreateFromLocalPath(uri, localPath));
-				}
-			}
-
-			_storage.MarkUrlAsCrawled(crawlingUrl.Id);
-
-			var outputUrl = _storage.GetUrlAndMarkAsSaved(_currentScheme, crawlingUrl.Id);
-			_simpleOutputWriter.WriteLine(outputUrl);
 		}
 		
+
+		private void WriteToStreamAndMarkAsProcessed(int id)
+		{
+			var outputUrl = _storage.GetById(id);
+			_simpleOutputWriter.WriteLine(outputUrl.ToString());
+			_storage.MarkUrlAsProcessed(id);
+		}
+
 
 		private bool TryGetLinksFromRemotePage(Uri uri, out List<string> links)
 		{

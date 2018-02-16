@@ -2,6 +2,8 @@
 {
 	public class CrawlingUrlForCreation
 	{
-		public string Url { get; set; }
+		public string LocalPath { get; set; }
+		public string Authority { get; set; }
+		public string Scheme { get; set; }
 	}
 }

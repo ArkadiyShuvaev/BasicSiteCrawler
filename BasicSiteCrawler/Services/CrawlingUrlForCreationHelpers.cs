@@ -9,7 +9,9 @@ namespace BasicSiteCrawler.Services
 		{
 			return new CrawlingUrlForCreation
 			{
-				Url = (uri.Authority + localPath).TrimEnd('/')
+				LocalPath = $"/{localPath.TrimEnd('/')}",
+				Authority = uri.Authority,
+				Scheme = uri.Scheme
 			};
 		}
 
@@ -17,7 +19,9 @@ namespace BasicSiteCrawler.Services
 		{
 			return new CrawlingUrlForCreation
 			{
-				Url = (uri.Authority + uri.LocalPath).TrimEnd('/')
+				LocalPath = uri.LocalPath,
+				Authority = uri.Authority,
+				Scheme = uri.Scheme
 			};
 		}
 	}

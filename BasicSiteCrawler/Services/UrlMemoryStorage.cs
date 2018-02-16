@@ -21,7 +21,8 @@ namespace BasicSiteCrawler.Services
 			if (url == null) throw new ArgumentNullException(nameof(url));
 
 			
-			var existingUrl = _urls.FirstOrDefault(u => u.Url.Equals(url.Url, StringComparison.CurrentCultureIgnoreCase));
+			var existingUrl = _urls.FirstOrDefault(u => u.LocalPath.Equals(url.LocalPath, StringComparison.CurrentCultureIgnoreCase) &&
+			                                            u.Authority.Equals(url.Authority, StringComparison.CurrentCultureIgnoreCase));
 			if (existingUrl != null)
 			{
 				return existingUrl;
@@ -31,19 +32,26 @@ namespace BasicSiteCrawler.Services
 			var crawlingUrl = new CrawlingUrl
 			{
 				Id = id,
-				Url = url.Url
+				LocalPath = url.LocalPath,
+				Authority = url.Authority,
+				Scheme = url.Scheme
 			};
 			_urls.Add(crawlingUrl);
 
 			return crawlingUrl;
 		}
-
+		
 		private int CreateId()
 		{
 			return _urls.Count + 1;
 		}
 
 		public IEnumerable<CrawlingUrl> GetUncrawledUrls()
+		{
+			return _urls.Where(u => !u.IsCrawled);
+		}
+
+		public IEnumerable<CrawlingUrl> GetCrawledUrls()
 		{
 			return _urls.Where(u => !u.IsCrawled);
 		}
@@ -62,35 +70,28 @@ namespace BasicSiteCrawler.Services
 		public void MarkUrlAsCrawled(int id)
 		{
 			if (id <= 0) throw new ArgumentOutOfRangeException(nameof(id));
-
-			var existingUrl = _urls.FirstOrDefault(u => u.Id == id);
-			if (existingUrl == null) throw new ArgumentNullException(nameof(existingUrl));
-
+			var existingUrl = GetExistingUrlAndThrowIfNoExist(id);
 			existingUrl.IsCrawled = true;
 		}
-		
-		public string GetUrlAndMarkAsSaved(string scheme, int id)
+
+		public void MarkUrlAsProcessed(int id)
 		{
-			var crawledItems = _urls.FirstOrDefault(u => u.Id == id);
-
-			if (crawledItems == null)
-			{
-				return string.Empty;
-			}
-
-			return crawledItems.ConvertToFullUrl(scheme);
+			if (id <= 0) throw new ArgumentOutOfRangeException(nameof(id));
+			var existingUrl = GetExistingUrlAndThrowIfNoExist(id);
+			existingUrl.IsProcessed = true;
 		}
 
-		
-		public IEnumerable<string> GetUrlsAndMarkAsSaved(string currentScheme)
+		public CrawlingUrl GetById(int id)
 		{
-			var result = new List<string>();
-			foreach (var url in _urls.Where(u => u.IsCrawled && !u.IsSaved))
-			{
-				result.Add(url.ConvertToFullUrl(currentScheme));
-			}
+			var existingUrl = GetExistingUrlAndThrowIfNoExist(id);
+			return existingUrl;
+		}
 
-			return result;
+		private CrawlingUrl GetExistingUrlAndThrowIfNoExist(int id)
+		{
+			var existingUrl = _urls.FirstOrDefault(u => u.Id == id);
+			if (existingUrl == null) throw new ArgumentNullException(nameof(existingUrl));
+			return existingUrl;
 		}
 	}
 }
