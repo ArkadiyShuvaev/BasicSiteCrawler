@@ -48,10 +48,9 @@ namespace BasicSiteCrawler.Services
 			}
 			_currentScheme = uri.Scheme;
 
-			if (ProcessRootUri(uri))
-			{
-				ProcessUnfinishedUrls(_storage.GetUnprocessedUrls().ToList());
-			}
+			ProcessRootUri(uri);
+			ProcessUnfinishedUrls();
+			
 
 			WriteCrawlResultsToStream();
 		}
@@ -65,22 +64,16 @@ namespace BasicSiteCrawler.Services
 				_simpleOutputWriter.WriteLine(item);
 			}
 		}
+		
 
-		private void WriteCrawlResultsToStream(int id)
-		{
-			var result = _storage.GetUrlAndMarkAsSaved(_currentScheme, id);
-
-			_simpleOutputWriter.WriteLine(result);
-		}
-
-		private bool ProcessRootUri(Uri uri)
+		private void ProcessRootUri(Uri uri)
 		{
 			List<string> childrenLinks;
 			var result = TryGetLinksFromRemotePage(uri, out childrenLinks);
 
 			if (!result)
 			{
-				return false;
+				return;
 			}
 
 			foreach (var localLink in childrenLinks)
@@ -89,9 +82,7 @@ namespace BasicSiteCrawler.Services
 			}
 
 			var rootUrl = _storage.Add(GetPathFromUri(uri));
-			_storage.MarkAsProcessed(rootUrl.Id);
-
-			return true;
+			_storage.MarkUrlAsCrawled(rootUrl.Id);
 		}
 
 		private static string GetPathFromUri(Uri uri)
@@ -100,37 +91,32 @@ namespace BasicSiteCrawler.Services
 		}
 
 		
-		private void ProcessUnfinishedUrls(ICollection<CrawlingUrl> getUnprocessedUrls)
+		private void ProcessUnfinishedUrls()
 		{
-			if (getUnprocessedUrls == null || getUnprocessedUrls.Count == 0)
+			while (_storage.AreUncrawledUrlsExist())
 			{
-				return;
-			}
-
-			var tasks = new List<Task>(getUnprocessedUrls.Count);
-			foreach (var unprocessedUrl in getUnprocessedUrls)
-			{
-				tasks.Add(Task.Factory.StartNew(() => ProcessCrawlingUrl(unprocessedUrl)));
-			}
-
-			var finalTask = Task.Factory.ContinueWhenAll(tasks.ToArray(), resolvedTasks =>
-			{
-				foreach (var task in resolvedTasks)
+				var unprocessedUrls = _storage.GetUncrawledUrls().ToList();
+				if (unprocessedUrls.Count == 0)
 				{
-					if (task.IsCompleted)
-					{
-						ProcessUnfinishedUrls(_storage.GetUnprocessedUrls().ToList());
-					}
+					return;
 				}
-				
-			});
 
-			finalTask.Wait();
+				var tasks = new List<Task>(unprocessedUrls.Count);
+
+				foreach (var unprocessedUrl in unprocessedUrls)
+				{
+					tasks.Add(Task.Run(() => { ProcessCrawlingUrl(unprocessedUrl); }));
+				}
+
+				Task.WaitAll(tasks.ToArray());
+
+			}
+			
 		}
 
 		private void ProcessCrawlingUrl(CrawlingUrl crawlingUrl)
 		{
-			if (_storage.IsProcessed(crawlingUrl.Id))
+			if (_storage.IsCrawled(crawlingUrl.Id))
 			{
 				return;
 			}
@@ -155,8 +141,10 @@ namespace BasicSiteCrawler.Services
 				}
 			}
 
-			_storage.MarkAsProcessed(crawlingUrl.Id);
-			WriteCrawlResultsToStream(crawlingUrl.Id);
+			_storage.MarkUrlAsCrawled(crawlingUrl.Id);
+
+			var outputUrl = _storage.GetUrlAndMarkAsSaved(_currentScheme, crawlingUrl.Id);
+			_simpleOutputWriter.WriteLine(outputUrl);
 		}
 		
 		private void AddLinkToStorage(Uri uri, string localLink)

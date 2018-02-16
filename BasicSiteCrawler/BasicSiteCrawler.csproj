@@ -57,7 +57,7 @@
     <Compile Include="Services\SimpleHtmlParser.cs" />
     <Compile Include="Services\NetworkProvider.cs" />
     <Compile Include="Services\SimpleOutputWriter.cs" />
-    <Compile Include="Services\UrlStorage.cs" />
+    <Compile Include="Services\UrlMemoryStorage.cs" />
     <Compile Include="Models\CrawlingUrl.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

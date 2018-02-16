@@ -53,7 +53,7 @@ namespace BasicSiteCrawler
 			{
 				var networkProvider = new NetworkProvider(clientHandler);
 				IHtmlParser htmlParser = new SimpleHtmlParser();
-				var temporaryUrlStorage = new UrlStorage();
+				var temporaryUrlStorage = new UrlMemoryStorage();
 
 				var crawlerService = new BasicCrawler(networkProvider, logger, htmlParser, 
 					temporaryUrlStorage, new SimpleOutputWriter(streamWriter));

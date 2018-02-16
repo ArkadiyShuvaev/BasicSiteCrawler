@@ -7,11 +7,11 @@ using BasicSiteCrawler.Models;
 
 namespace BasicSiteCrawler.Services
 {
-	public class UrlStorage : IUrlStorage
+	public class UrlMemoryStorage : IUrlStorage
 	{
 		private readonly ConcurrentBag<CrawlingUrl> _urls;
 
-		public UrlStorage()
+		public UrlMemoryStorage()
 		{
 			_urls = new ConcurrentBag<CrawlingUrl>();
 		}
@@ -43,18 +43,23 @@ namespace BasicSiteCrawler.Services
 			return _urls.Count + 1;
 		}
 
-		public IEnumerable<CrawlingUrl> GetUnprocessedUrls()
+		public IEnumerable<CrawlingUrl> GetUncrawledUrls()
 		{
 			return _urls.Where(u => !u.IsCrawled);
 		}
 
-		public bool IsProcessed(int id)
+		public bool AreUncrawledUrlsExist()
+		{
+			return _urls.Any(u => u.IsCrawled == false);
+		}
+
+		public bool IsCrawled(int id)
 		{
 			var existingUrl = _urls.FirstOrDefault(u => u.Id == id);
 			return existingUrl != null && existingUrl.IsCrawled;
 		}
 
-		public void MarkAsProcessed(int id)
+		public void MarkUrlAsCrawled(int id)
 		{
 			if (id <= 0) throw new ArgumentOutOfRangeException(nameof(id));
 
