@@ -5,7 +5,7 @@ namespace BasicSiteCrawler.Abstractions
 {
 	public interface IUrlStorage
 	{
-		CrawlingUrl Add(string url);
+		CrawlingUrl Add(CrawlingUrlForCreation url);
 		IEnumerable<CrawlingUrl> GetUncrawledUrls();
 		bool AreUncrawledUrlsExist();
 		bool IsCrawled(int id);

@@ -16,12 +16,12 @@ namespace BasicSiteCrawler.Services
 			_urls = new ConcurrentBag<CrawlingUrl>();
 		}
 
-		public CrawlingUrl Add(string url)
+		public CrawlingUrl Add(CrawlingUrlForCreation url)
 		{
 			if (url == null) throw new ArgumentNullException(nameof(url));
-			var trimmedUrl = url.TrimEnd('/');
 
-			var existingUrl = _urls.FirstOrDefault(u => u.Url.Equals(trimmedUrl, StringComparison.CurrentCultureIgnoreCase));
+			
+			var existingUrl = _urls.FirstOrDefault(u => u.Url.Equals(url.Url, StringComparison.CurrentCultureIgnoreCase));
 			if (existingUrl != null)
 			{
 				return existingUrl;
@@ -31,7 +31,7 @@ namespace BasicSiteCrawler.Services
 			var crawlingUrl = new CrawlingUrl
 			{
 				Id = id,
-				Url = trimmedUrl
+				Url = url.Url
 			};
 			_urls.Add(crawlingUrl);
 
@@ -68,8 +68,7 @@ namespace BasicSiteCrawler.Services
 
 			existingUrl.IsCrawled = true;
 		}
-
-
+		
 		public string GetUrlAndMarkAsSaved(string scheme, int id)
 		{
 			var crawledItems = _urls.FirstOrDefault(u => u.Id == id);

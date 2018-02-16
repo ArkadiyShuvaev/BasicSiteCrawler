@@ -76,13 +76,19 @@ namespace BasicSiteCrawler.Services
 				return;
 			}
 
-			foreach (var localLink in childrenLinks)
+			foreach (var localPath in childrenLinks)
 			{
-				AddLinkToStorage(uri, localLink);
+				_storage.Add(CrawlingUrlForCreationHelpers.CreateFromLocalPath(uri, localPath));
 			}
 
-			AddLinkToStorage(uri, uri.LocalPath);
+			var crawlingUrl = _storage.Add(CrawlingUrlForCreationHelpers.CreateFromUri(uri));
+			if (crawlingUrl.Id > 0)
+			{
+				_storage.MarkUrlAsCrawled(crawlingUrl.Id);
+			}
+			
 		}
+		
 		
 		private void ProcessUnfinishedUrls()
 		{
@@ -123,14 +129,14 @@ namespace BasicSiteCrawler.Services
 				_logger.WriteWarning($"The '{url}' url cannot be processed.");
 			}
 			
-			List<string> childrenLinks;
-			var getLinksResult = TryGetLinksFromRemotePage(uri, out childrenLinks);
+			List<string> localPaths;
+			var getLinksResult = TryGetLinksFromRemotePage(uri, out localPaths);
 
 			if (getLinksResult)
 			{
-				foreach (var localLink in childrenLinks)
+				foreach (var localPath in localPaths)
 				{
-					AddLinkToStorage(uri, localLink);
+					_storage.Add(CrawlingUrlForCreationHelpers.CreateFromLocalPath(uri, localPath));
 				}
 			}
 
@@ -140,10 +146,6 @@ namespace BasicSiteCrawler.Services
 			_simpleOutputWriter.WriteLine(outputUrl);
 		}
 		
-		private void AddLinkToStorage(Uri uri, string localLink)
-		{
-			_storage.Add(uri.Authority + localLink);
-		}
 
 		private bool TryGetLinksFromRemotePage(Uri uri, out List<string> links)
 		{
