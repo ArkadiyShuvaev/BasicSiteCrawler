@@ -16,7 +16,7 @@ namespace BasicSiteCrawler.Services
 			_urls = new ConcurrentBag<CrawlingUrl>();
 		}
 
-		public CrawlingUrl Add(CrawlingUrlForCreation url)
+		public bool TryAdd(CrawlingUrlForCreation url)
 		{
 			if (url == null) throw new ArgumentNullException(nameof(url));
 
@@ -25,7 +25,7 @@ namespace BasicSiteCrawler.Services
 			                                            u.Authority.Equals(url.Authority, StringComparison.CurrentCultureIgnoreCase));
 			if (existingUrl != null)
 			{
-				return existingUrl;
+				return false;
 			}
 
 			var id = CreateId();
@@ -38,7 +38,7 @@ namespace BasicSiteCrawler.Services
 			};
 			_urls.Add(crawlingUrl);
 
-			return crawlingUrl;
+			return true;
 		}
 		
 		private int CreateId()
@@ -51,19 +51,8 @@ namespace BasicSiteCrawler.Services
 			return _urls.Where(u => !u.IsCrawled);
 		}
 
-		public IEnumerable<CrawlingUrl> GetCrawledUrls()
-		{
-			return _urls.Where(u => !u.IsCrawled);
-		}
-
-		public bool IsUncrawledQueueEmpty => _urls.Any(u => u.IsCrawled == false);
-
-		public bool IsCrawled(int id)
-		{
-			var existingUrl = _urls.FirstOrDefault(u => u.Id == id);
-			return existingUrl != null && existingUrl.IsCrawled;
-		}
-
+		public bool IsUncrawledUrlExist => _urls.Any(u => u.IsCrawled == false);
+		
 		public void MarkUrlAsCrawled(int id)
 		{
 			if (id <= 0) throw new ArgumentOutOfRangeException(nameof(id));
@@ -78,10 +67,10 @@ namespace BasicSiteCrawler.Services
 			existingUrl.IsProcessed = true;
 		}
 
-		public CrawlingUrl GetById(int id)
+		public void MarkUrlAsIncorrected(int id)
 		{
 			var existingUrl = GetExistingUrlAndThrowIfNoExist(id);
-			return existingUrl;
+			existingUrl.IsIncorrected = true;
 		}
 
 		private CrawlingUrl GetExistingUrlAndThrowIfNoExist(int id)

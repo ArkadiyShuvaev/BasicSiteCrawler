@@ -5,11 +5,11 @@ namespace BasicSiteCrawler.Services
 {
 	public static class CrawlingUrlForCreationHelpers
 	{
-		public static CrawlingUrlForCreation CreateFromLocalPath(Uri uri, string localPath)
+		public static CrawlingUrlForCreation CreateFromLocalPath(CrawlingUrl uri, string localPath)
 		{
 			return new CrawlingUrlForCreation
 			{
-				LocalPath = $"/{localPath.TrimEnd('/')}",
+				LocalPath = localPath,
 				Authority = uri.Authority,
 				Scheme = uri.Scheme
 			};

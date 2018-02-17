@@ -4,6 +4,6 @@ namespace BasicSiteCrawler.Abstractions
 {
 	public interface IHtmlParser
 	{
-		List<string> GetUrls(string pageBody);
+		List<string> GetRelativeUrls(string pageBody);
 	}
 }

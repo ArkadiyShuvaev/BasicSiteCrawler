@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using BasicSiteCrawler.Abstractions;
 using BasicSiteCrawler.Models;
 
@@ -13,7 +11,6 @@ namespace BasicSiteCrawler.Services
 		private readonly ILogger _logger;
 		private readonly IHtmlParser _htmlParser;
 		private readonly IUrlStorage _storage;
-		//private string _currentScheme;
 		private readonly IOutputWriter _simpleOutputWriter;
 
 		public BasicCrawler(INetworkProvider networkProvider, ILogger logger, IHtmlParser htmlParser, 
@@ -46,126 +43,67 @@ namespace BasicSiteCrawler.Services
 				_logger.WriteError(message);
 				throw new Exception(message);
 			}
-			
-			ProcessRootUri(uri);
-			ProcessUnfinishedUrls();
-			
-			
+
+			_storage.TryAdd(CrawlingUrlForCreationHelpers.CreateFromUri(uri));
+			ProcessUncrawledUrls();
 		}
 		
-
-		private void ProcessRootUri(Uri uri)
+		private void ProcessUncrawledUrls()
 		{
-			if (!ProcessUriAndReturnOperationResultAsBool(uri))
+			while (_storage.IsUncrawledUrlExist)
 			{
-				return;
+				var uncrawledUrls = _storage.GetUncrawledUrls().ToList();
+				
+				var items = uncrawledUrls
+					.Select(u =>
+					{
+						var url = u.ToString();
+						Uri uri;
+						var parseResult = Uri.TryCreate(url, UriKind.Absolute, out uri);
+
+						if (parseResult)
+						{
+							return new { CrawlingUrl = u, Uri = uri };
+						}
+
+						_storage.MarkUrlAsProcessed(u.Id);
+						_storage.MarkUrlAsIncorrected(u.Id);
+
+						_logger.WriteWarning($"The '{url}' url cannot be processed.");
+
+						return null;
+					})
+					.Where(u => u != null)
+					.ToList();
+				
+				var tasks = items.Select(item => new
+				{
+					CrawledUrl = item.CrawlingUrl,
+					PageBodyTask = _networkProvider.GetPageBody(item.Uri)
+				});
+
+				foreach (var task in tasks)
+				{
+					var pageBody = task.PageBodyTask.Result;
+					
+					ProcessPageBody(pageBody, task.CrawledUrl);
+				}
+
 			}
 
-			var crawlingUrl = _storage.Add(CrawlingUrlForCreationHelpers.CreateFromUri(uri));
-			if (crawlingUrl != null)
-			{
-				_storage.MarkUrlAsCrawled(crawlingUrl.Id);
-				WriteToStreamAndMarkAsProcessed(crawlingUrl.Id);
-			}
-			
 		}
-		
-		private void ProcessCrawlingUrl(CrawlingUrl crawlingUrl)
+
+		private void ProcessPageBody(string pageBody, CrawlingUrl crawlingUrl)
 		{
-			if (_storage.IsCrawled(crawlingUrl.Id))
+			var relativeUrls = _htmlParser.GetRelativeUrls(pageBody);
+			foreach (var relativeUrl in relativeUrls)
 			{
-				return;
-			}
-
-			var url = crawlingUrl.ToString();
-			Uri uri;
-			var parseResult = Uri.TryCreate(url, UriKind.Absolute, out uri);
-
-			if (!parseResult)
-			{
-				_logger.WriteWarning($"The '{url}' url cannot be processed.");
-				return;
-			}
-
-			if (!ProcessUriAndReturnOperationResultAsBool(uri))
-			{
-				return;
+				_storage.TryAdd(CrawlingUrlForCreationHelpers.CreateFromLocalPath(crawlingUrl, relativeUrl));
 			}
 
 			_storage.MarkUrlAsCrawled(crawlingUrl.Id);
-
-			WriteToStreamAndMarkAsProcessed(crawlingUrl.Id);
-		}
-
-		private bool ProcessUriAndReturnOperationResultAsBool(Uri uri)
-		{
-			List<string> localPaths;
-			var isGetLinksSucceeded = TryGetLinksFromRemotePage(uri, out localPaths);
-
-			if (!isGetLinksSucceeded)
-			{
-				_logger.WriteWarning($"The '{uri.ToString()}' url cannot be processed.");
-				return false;
-			}
-
-			foreach (var localPath in localPaths)
-			{
-				_storage.Add(CrawlingUrlForCreationHelpers.CreateFromLocalPath(uri, localPath));
-			}
-			return true;
-		}
-
-		private void ProcessUnfinishedUrls()
-		{
-			while (_storage.IsUncrawledQueueEmpty)
-			{
-				var unprocessedUrls = _storage.GetUncrawledUrls().ToList();
-				if (unprocessedUrls.Count == 0)
-				{
-					return;
-				}
-
-				var tasks = new List<Task>(unprocessedUrls.Count);
-
-				foreach (var unprocessedUrl in unprocessedUrls)
-				{
-					tasks.Add(Task.Run(() => { ProcessCrawlingUrl(unprocessedUrl); }));
-				}
-
-				Task.WaitAll(tasks.ToArray());
-			}
-			
-		}
-		
-
-		private void WriteToStreamAndMarkAsProcessed(int id)
-		{
-			var outputUrl = _storage.GetById(id);
-			_simpleOutputWriter.WriteLine(outputUrl.ToString());
-			_storage.MarkUrlAsProcessed(id);
-		}
-
-
-		private bool TryGetLinksFromRemotePage(Uri uri, out List<string> links)
-		{
-			var result = false;
-			links = new List<string>();
-
-			try
-			{
-				var pageBody = _networkProvider.GetPageBody(uri);
-				var bodyUrls = _htmlParser.GetUrls(pageBody.Result);
-
-				links = bodyUrls.Where(u => u.StartsWith("/")).ToList();
-				result = true;
-			}
-			catch (Exception e)
-			{
-				_logger.WriteError($"The '{uri.AbsoluteUri}' cannot be processed due to the reason: {e}");
-			}
-
-			
-			return result;
+			_simpleOutputWriter.WriteLine(crawlingUrl.ToString());
+			_storage.MarkUrlAsProcessed(crawlingUrl.Id);
 		}
 	}
 }

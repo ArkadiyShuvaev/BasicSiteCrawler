@@ -8,6 +8,7 @@
 		public string Scheme { get; set; }
 		public bool IsCrawled { get; set; }
 		public bool IsProcessed { get; set; }
+		public bool IsIncorrected { get; set; }
 
 		public override string ToString()
 		{

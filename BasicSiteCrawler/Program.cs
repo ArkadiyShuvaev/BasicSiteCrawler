@@ -16,7 +16,8 @@ namespace BasicSiteCrawler
 			var logger = new DefaultLogger();
 
 #if DEBUG
-			args = new[] {"http://vk.com"};
+			//args = new[] { "http://www.bbc.com/" };
+			args = new[] { "http://www.vk.com/" };
 #endif
 
 			try
@@ -59,6 +60,7 @@ namespace BasicSiteCrawler
 					temporaryUrlStorage, new SimpleOutputWriter(streamWriter));
 
 				crawlerService.CrawlAndSaveToStream(startLink);
+				Console.ReadKey();
 			}
 		}
 

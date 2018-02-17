@@ -9,7 +9,7 @@ namespace BasicSiteCrawler.Services
 	public class SimpleHtmlParser : IHtmlParser
 	{
 
-		public List<string> GetUrls(string pageAsHtml)
+		public List<string> GetRelativeUrls(string pageAsHtml)
 		{
 			var result = new List<string>();
 
@@ -25,7 +25,7 @@ namespace BasicSiteCrawler.Services
 				result.Add(hrefValue);
 			}
 
-			return result;
+			return result.Where(u => u.StartsWith("/")).ToList();
 		}
 
 		private static string SafeGetAttributeValue(HtmlNode elem, string attrName)

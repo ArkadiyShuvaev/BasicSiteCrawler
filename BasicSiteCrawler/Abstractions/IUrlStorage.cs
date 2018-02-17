@@ -5,13 +5,11 @@ namespace BasicSiteCrawler.Abstractions
 {
 	public interface IUrlStorage
 	{
-		CrawlingUrl Add(CrawlingUrlForCreation url);
-		CrawlingUrl GetById(int id);
+		bool TryAdd(CrawlingUrlForCreation url);
 		IEnumerable<CrawlingUrl> GetUncrawledUrls();
-		IEnumerable<CrawlingUrl> GetCrawledUrls();
-		bool IsUncrawledQueueEmpty { get; }
-		bool IsCrawled(int id);
+		bool IsUncrawledUrlExist { get; }
 		void MarkUrlAsCrawled(int id);
 		void MarkUrlAsProcessed(int id);
+		void MarkUrlAsIncorrected(int id);
 	}
 }

@@ -8,7 +8,7 @@ namespace BasicSiteCrawler.Services
 	public class NetworkProvider : INetworkProvider
 	{
 		private readonly HttpMessageHandler _httpMessageHandler;
-		private const bool DisposeHttpMessageHandler = false; //Must be disposed by calling code
+		private const bool DisposeHttpMessageHandler = false;
 
 		public NetworkProvider(HttpMessageHandler httpMessageHandler)
 		{
