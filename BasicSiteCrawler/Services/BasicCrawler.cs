@@ -5,15 +5,16 @@ using BasicSiteCrawler.Models;
 
 namespace BasicSiteCrawler.Services
 {
-	public class BasicCrawler
+	public sealed class BasicCrawler : IBasicCrawler
 	{
 		private readonly INetworkProvider _networkProvider;
 		private readonly ILogger _logger;
 		private readonly IHtmlParser _htmlParser;
 		private readonly IUrlStorage _storage;
 		private readonly IOutputWriter _simpleOutputWriter;
+		public event EventHandler<CrawlingUrlArgs> UrlCrawled = (sender, args) => { };
 
-		public BasicCrawler(INetworkProvider networkProvider, ILogger logger, IHtmlParser htmlParser, 
+		public BasicCrawler(INetworkProvider networkProvider, ILogger logger, IHtmlParser htmlParser,
 			IUrlStorage storage, IOutputWriter streamOutputWriter)
 		{
 			if (networkProvider == null) throw new ArgumentNullException(nameof(networkProvider));
@@ -27,8 +28,15 @@ namespace BasicSiteCrawler.Services
 			_htmlParser = htmlParser;
 			_storage = storage;
 			_simpleOutputWriter = streamOutputWriter;
+			UrlCrawled += OnUrlCrawled;
 		}
 
+		private void OnUrlCrawled(object o, CrawlingUrlArgs eventArgs)
+		{
+			_simpleOutputWriter.WriteLine(eventArgs.CrawlingUrl.ToString());
+		}
+
+		
 
 		public void CrawlAndSaveToStream(string startingUrl)
 		{
@@ -47,13 +55,13 @@ namespace BasicSiteCrawler.Services
 			_storage.TryAdd(CrawlingUrlForCreationHelpers.CreateFromUri(uri));
 			ProcessUncrawledUrls();
 		}
-		
+
 		private void ProcessUncrawledUrls()
 		{
 			while (_storage.IsUncrawledUrlExist)
 			{
 				var uncrawledUrls = _storage.GetUncrawledUrls().ToList();
-				
+
 				var items = uncrawledUrls
 					.Select(u =>
 					{
@@ -63,10 +71,10 @@ namespace BasicSiteCrawler.Services
 
 						if (parseResult)
 						{
-							return new { CrawlingUrl = u, Uri = uri };
+							return new {CrawlingUrl = u, Uri = uri};
 						}
 
-						_storage.MarkUrlAsProcessed(u.Id);
+						_storage.MarkUrlAsCrawled(u.Id);
 						_storage.MarkUrlAsIncorrected(u.Id);
 
 						_logger.WriteWarning($"The '{url}' url cannot be processed.");
@@ -75,7 +83,7 @@ namespace BasicSiteCrawler.Services
 					})
 					.Where(u => u != null)
 					.ToList();
-				
+
 				var tasks = items.Select(item => new
 				{
 					CrawledUrl = item.CrawlingUrl,
@@ -85,12 +93,10 @@ namespace BasicSiteCrawler.Services
 				foreach (var task in tasks)
 				{
 					var pageBody = task.PageBodyTask.Result;
-					
+
 					ProcessPageBody(pageBody, task.CrawledUrl);
 				}
-
 			}
-
 		}
 
 		private void ProcessPageBody(string pageBody, CrawlingUrl crawlingUrl)
@@ -102,8 +108,12 @@ namespace BasicSiteCrawler.Services
 			}
 
 			_storage.MarkUrlAsCrawled(crawlingUrl.Id);
-			_simpleOutputWriter.WriteLine(crawlingUrl.ToString());
-			_storage.MarkUrlAsProcessed(crawlingUrl.Id);
+			OnUrlCrawled(new CrawlingUrlArgs { CrawlingUrl = crawlingUrl });
+		}
+
+		private void OnUrlCrawled(CrawlingUrlArgs args)
+		{
+			UrlCrawled.Invoke(this, args);
 		}
 	}
 }

@@ -60,12 +60,12 @@ namespace BasicSiteCrawler.Services
 			existingUrl.IsCrawled = true;
 		}
 
-		public void MarkUrlAsProcessed(int id)
-		{
-			if (id <= 0) throw new ArgumentOutOfRangeException(nameof(id));
-			var existingUrl = GetExistingUrlAndThrowIfNoExist(id);
-			existingUrl.IsProcessed = true;
-		}
+		//public void MarkUrlAsProcessed(int id)
+		//{
+		//	if (id <= 0) throw new ArgumentOutOfRangeException(nameof(id));
+		//	var existingUrl = GetExistingUrlAndThrowIfNoExist(id);
+		//	existingUrl.IsProcessed = true;
+		//}
 
 		public void MarkUrlAsIncorrected(int id)
 		{

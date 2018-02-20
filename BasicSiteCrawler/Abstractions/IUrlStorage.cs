@@ -9,7 +9,7 @@ namespace BasicSiteCrawler.Abstractions
 		IEnumerable<CrawlingUrl> GetUncrawledUrls();
 		bool IsUncrawledUrlExist { get; }
 		void MarkUrlAsCrawled(int id);
-		void MarkUrlAsProcessed(int id);
+		//void MarkUrlAsProcessed(int id);
 		void MarkUrlAsIncorrected(int id);
 	}
 }

@@ -53,8 +53,10 @@
     <Compile Include="Abstractions\IHtmlParser.cs" />
     <Compile Include="Abstractions\IUrlStorage.cs" />
     <Compile Include="Abstractions\IOutputWriter.cs" />
+    <Compile Include="Models\CrawlingUrlArgs.cs" />
     <Compile Include="Models\CrawlingUrlForCreation.cs" />
     <Compile Include="Services\CrawlingUrlForCreationHelpers.cs" />
+    <Compile Include="Abstractions\IBasicCrawler.cs" />
     <Compile Include="Services\SimpleHtmlParser.cs" />
     <Compile Include="Services\NetworkProvider.cs" />
     <Compile Include="Services\SimpleOutputWriter.cs" />
