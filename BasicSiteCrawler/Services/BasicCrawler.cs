@@ -5,39 +5,29 @@ using BasicSiteCrawler.Models;
 
 namespace BasicSiteCrawler.Services
 {
-	public sealed class BasicCrawler : IBasicCrawler
+	public sealed class BasicCrawler
 	{
 		private readonly INetworkProvider _networkProvider;
 		private readonly ILogger _logger;
 		private readonly IHtmlParser _htmlParser;
 		private readonly IUrlStorage _storage;
-		private readonly IOutputWriter _simpleOutputWriter;
 		public event EventHandler<CrawlingUrlArgs> UrlCrawled = (sender, args) => { };
-
+		
 		public BasicCrawler(INetworkProvider networkProvider, ILogger logger, IHtmlParser htmlParser,
-			IUrlStorage storage, IOutputWriter streamOutputWriter)
+			IUrlStorage storage)
 		{
 			if (networkProvider == null) throw new ArgumentNullException(nameof(networkProvider));
 			if (logger == null) throw new ArgumentNullException(nameof(logger));
 			if (htmlParser == null) throw new ArgumentNullException(nameof(htmlParser));
 			if (storage == null) throw new ArgumentNullException(nameof(storage));
-			if (streamOutputWriter == null) throw new ArgumentNullException(nameof(streamOutputWriter));
-
+			
 			_networkProvider = networkProvider;
 			_logger = logger;
 			_htmlParser = htmlParser;
 			_storage = storage;
-			_simpleOutputWriter = streamOutputWriter;
-			UrlCrawled += OnUrlCrawled;
-		}
-
-		private void OnUrlCrawled(object o, CrawlingUrlArgs eventArgs)
-		{
-			_simpleOutputWriter.WriteLine(eventArgs.CrawlingUrl.ToString());
 		}
 
 		
-
 		public void CrawlAndSaveToStream(string startingUrl)
 		{
 			if (startingUrl == null) throw new ArgumentNullException(nameof(startingUrl));

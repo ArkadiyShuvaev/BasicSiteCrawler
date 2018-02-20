@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using BasicSiteCrawler.Abstractions;
+using BasicSiteCrawler.Models;
 using BasicSiteCrawler.Services;
 
 namespace BasicSiteCrawler
@@ -56,12 +56,21 @@ namespace BasicSiteCrawler
 				IHtmlParser htmlParser = new SimpleHtmlParser();
 				var temporaryUrlStorage = new UrlMemoryStorage();
 
+				var simpleOutputWriter = new SimpleOutputWriter(streamWriter);
 				var crawlerService = new BasicCrawler(networkProvider, logger, htmlParser, 
-					temporaryUrlStorage, new SimpleOutputWriter(streamWriter));
+					temporaryUrlStorage);
+
+				crawlerService.UrlCrawled += (sender, args) => CrawlerServiceOnUrlCrawled(args, simpleOutputWriter);
 
 				crawlerService.CrawlAndSaveToStream(startLink);
+				
 				Console.ReadKey();
 			}
+		}
+
+		private static void CrawlerServiceOnUrlCrawled(CrawlingUrlArgs crawlingUrlArgs, IOutputWriter streamWriter)
+		{
+			streamWriter.WriteLine(crawlingUrlArgs.CrawlingUrl.ToString());
 		}
 
 		private static bool IsParamValid(string[] args)
