@@ -47,8 +47,7 @@ namespace BasicSiteCrawler
 			{
 				File.Delete(ResultLog);
 			}
-
-
+			
 			using (var clientHandler = new HttpClientHandler())
 			using (var streamWriter = new StreamWriter(ResultLog))
 			{
@@ -62,7 +61,7 @@ namespace BasicSiteCrawler
 
 				crawlerService.UrlCrawled += (sender, args) => CrawlerServiceOnUrlCrawled(args, simpleOutputWriter);
 
-				crawlerService.CrawlAndSaveToStream(startLink);
+				crawlerService.CrawlUrl(startLink);
 				
 				Console.ReadKey();
 			}

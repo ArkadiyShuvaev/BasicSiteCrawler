@@ -28,7 +28,7 @@ namespace BasicSiteCrawler.Services
 		}
 
 		
-		public void CrawlAndSaveToStream(string startingUrl)
+		public void CrawlUrl(string startingUrl)
 		{
 			if (startingUrl == null) throw new ArgumentNullException(nameof(startingUrl));
 
