@@ -82,9 +82,15 @@ namespace BasicSiteCrawler.Services
 
 				foreach (var task in tasks)
 				{
-					var pageBody = task.PageBodyTask.Result;
-
-					ProcessPageBody(pageBody, task.CrawledUrl);
+					try
+					{
+						var pageBody = task.PageBodyTask.Result;
+						ProcessPageBody(pageBody, task.CrawledUrl);
+					}
+					catch (Exception ex)
+					{
+						_logger.WriteError(ex.ToString());
+					}
 				}
 			}
 		}

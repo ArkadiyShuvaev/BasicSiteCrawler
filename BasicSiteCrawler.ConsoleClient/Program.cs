@@ -13,6 +13,7 @@ namespace BasicSiteCrawler.ConsoleClient
 
 		static void Main(string[] args)
 		{
+			// TODO Implement Logger for Net Core
 			var logger = new DefaultLogger();
 
 #if DEBUG
