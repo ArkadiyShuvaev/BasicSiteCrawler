@@ -18,6 +18,7 @@ namespace BasicSiteCrawler.Web
         public void ConfigureServices(IServiceCollection services)
         {
 			services.AddMvc();
+	        services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -31,6 +32,10 @@ namespace BasicSiteCrawler.Web
             }
 			
 			app.UseStaticFiles();
+	        app.UseSignalR(routes =>
+	        {
+				routes.MapHub<UrlCrawledHub>("/UrlCrawled");
+	        });
 
 			app.UseMvc(routes =>
 			{
@@ -38,6 +43,7 @@ namespace BasicSiteCrawler.Web
 					name: "default",
 					template: "{controller=Home}/{action=Index}/{id?}");
 			});
+			
 		}
     }
 }

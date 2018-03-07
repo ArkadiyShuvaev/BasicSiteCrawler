@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\Api\CrawlUrlApi.ts" />
     <None Remove="ClientApp\Components\UrlListRow.tsx" />
   </ItemGroup>
 
@@ -33,13 +34,14 @@
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.0.0-preview1-final" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\Api\CrawlUrlApi.ts" />
     <TypeScriptCompile Include="ClientApp\Components\UrlList.tsx" />
-    <TypeScriptCompile Include="ClientApp\Components\Navigation.tsx" />
     <TypeScriptCompile Include="ClientApp\Components\App.tsx" />
     <TypeScriptCompile Include="ClientApp\Components\UrlListRow.tsx" />
     <TypeScriptCompile Include="ClientApp\index.tsx" />
@@ -47,6 +49,10 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BasicSiteCrawler\BasicSiteCrawler.csproj" />
   </ItemGroup>
 
 </Project>

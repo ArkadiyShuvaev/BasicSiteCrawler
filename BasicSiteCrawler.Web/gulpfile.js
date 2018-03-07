@@ -10,14 +10,12 @@ var tsProject = ts.createProject("tsconfig.json", {});
 
 var tsSrc = ["ClientApp/index.tsx"];
 
-//gulp.task("default", function () {
-//    return tsProject.src()
-//        .pipe(tsProject())
-//        .bun
-//        .js.pipe(gulp.dest("wwwroot"));
-//});
+gulp.task("signalR-client", function () {
+    //gulp.src("node_modules/@aspnet/signalr/dist/browser/signalr.min.js")
+    //    .pipe(gulp.dest("wwwroot/dist"));
+});
 
-gulp.task("default", function () {
+gulp.task("default", ["signalR-client"], function () {
     return browserify({
             basedir: '.',
             debug: true,

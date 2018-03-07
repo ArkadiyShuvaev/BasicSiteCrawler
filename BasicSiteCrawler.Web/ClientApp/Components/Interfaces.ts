@@ -1,9 +1,18 @@
-﻿export interface IAppState {
-    urls: Array<IUrl>
+﻿export interface IFormData {
+    inputFormValue: string;
+    isInputDisabled: boolean;
 }
 
-export interface INavigationProps {
-    onBtnClick: () => void
+export interface IAppState {
+    urls: Array<IUrl>;
+    formData: IFormData;
+}
+
+export interface IStaringUrlFormProps {
+    inputFormValue: string;
+    isInputDisabled: boolean;
+    onChange: (e: React.FormEvent<HTMLInputElement>) => void;
+    onBtnClick: (e: React.FormEvent<HTMLInputElement>) => void;
 }
 
 export interface IUrlListRowProps {
