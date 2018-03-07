@@ -52,7 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BasicSiteCrawler\BasicSiteCrawler.csproj" />
+    <ProjectReference Include="..\BasicSiteCrawler.Library\BasicSiteCrawler.Library.csproj" />
   </ItemGroup>
 
 </Project>

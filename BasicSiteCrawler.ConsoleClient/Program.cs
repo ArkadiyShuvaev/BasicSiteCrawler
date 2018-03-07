@@ -5,7 +5,7 @@ using BasicSiteCrawler.Abstractions;
 using BasicSiteCrawler.Models;
 using BasicSiteCrawler.Services;
 
-namespace BasicSiteCrawler
+namespace BasicSiteCrawler.ConsoleClient
 {
 	class Program
 	{
@@ -16,8 +16,8 @@ namespace BasicSiteCrawler
 			var logger = new DefaultLogger();
 
 #if DEBUG
-			//args = new[] { "http://www.bbc.com/" };
-			args = new[] { "http://www.vk.com/" };
+			args = new[] { "http://www.bbc.com/" };
+			//args = new[] { "http://www.vk.com/" };
 #endif
 
 			try
