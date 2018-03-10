@@ -1,6 +1,6 @@
 ﻿import RequestService from "./RequestService";
 
-const baseUrl = "/StartCrawl";
+const baseUrl = "/api/crawl";
 
 export default class CrawlUrlApi {
 
@@ -10,7 +10,8 @@ export default class CrawlUrlApi {
             const dto = { startingUrl: startingUrl };
 
             const requestService = new RequestService();
-            const result = requestService.postAsync(baseUrl, JSON.stringify(dto));
+            const url = `${baseUrl}/startcrawl`;
+            const result = requestService.postAsync(url, JSON.stringify(dto));
             result.then(result => {
                 //todo logging 
                 resolve(true);

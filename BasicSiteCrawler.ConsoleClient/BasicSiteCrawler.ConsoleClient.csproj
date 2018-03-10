@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="result.log" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BasicSiteCrawler.Library\BasicSiteCrawler.Library.csproj" />
   </ItemGroup>
 

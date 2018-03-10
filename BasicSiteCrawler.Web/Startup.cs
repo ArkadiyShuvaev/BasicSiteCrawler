@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BasicSiteCrawler.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -19,6 +20,7 @@ namespace BasicSiteCrawler.Web
         {
 			services.AddMvc();
 	        services.AddSignalR();
+	        services.AddSingleton<CrawlMediator, CrawlMediator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,7 +36,7 @@ namespace BasicSiteCrawler.Web
 			app.UseStaticFiles();
 	        app.UseSignalR(routes =>
 	        {
-				routes.MapHub<UrlCrawledHub>("/UrlCrawled");
+				routes.MapHub<CrawlUrlHub>("/CrawlUrlHub");
 	        });
 
 			app.UseMvc(routes =>

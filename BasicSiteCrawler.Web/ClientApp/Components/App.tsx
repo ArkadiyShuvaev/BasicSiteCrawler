@@ -28,10 +28,13 @@ export default class App extends React.Component<{}, IAppState> {
         this.handleFormClickNavigation = this.handleFormClickNavigation.bind(this);
         this.handleInputFormChange = this.handleInputFormChange.bind(this);
 
-        let urlConnection = new signalR.HubConnection("/UrlCrawled");
+        const urlConnection = new signalR.HubConnection("/CrawlUrlHub");
         urlConnection.on("send", (data: string): void => {
             this.addItemToStart({ url: data, id: data });
         });
+        urlConnection
+            .start()
+            .then(() => urlConnection.invoke("send", "http://test.com/url1"));
     }
 
     addItemToStart(url: IUrl) {
@@ -65,12 +68,12 @@ export default class App extends React.Component<{}, IAppState> {
             formData: newFormData
         });
 
-        if (isSuccessfull) {
-            let i = 3;
-            setInterval(() => {
-                this.addItemToStart({ url: "http://company.com/link" + i, id: (i++).toString() } as IUrl);
-            }, 2000);
-        }
+        //if (isSuccessfull) {
+        //    let i = 3;
+        //    setInterval(() => {
+        //        this.addItemToStart({ url: "http://company.com/link" + i, id: (i++).toString() } as IUrl);
+        //    }, 2000);
+        //}
             
     }
 
