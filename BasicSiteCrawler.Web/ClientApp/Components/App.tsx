@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import Navigation from "./StaringUrlForm";
+import StaringUrlForm from "./StaringUrlForm";
 import {UrlList} from "./UrlList";
 import { IUrl, IAppState, IFormData } from "./Interfaces";
 import CrawlUrlApi from "../Api/CrawlUrlApi";
@@ -67,14 +67,7 @@ export default class App extends React.Component<{}, IAppState> {
         this.setState({
             formData: newFormData
         });
-
-        //if (isSuccessfull) {
-        //    let i = 3;
-        //    setInterval(() => {
-        //        this.addItemToStart({ url: "http://company.com/link" + i, id: (i++).toString() } as IUrl);
-        //    }, 2000);
-        //}
-            
+        
     }
 
 
@@ -85,7 +78,7 @@ export default class App extends React.Component<{}, IAppState> {
                 <div className="col-xs-12">
                     <div className="panel panel-primary">
                         <div className="panel-body">
-                            <Navigation
+                            <StaringUrlForm
                                 inputFormValue={this.state.formData.inputFormValue}
                                 onChange={this.handleInputFormChange}
                                 onBtnClick={this.handleFormClickNavigation}
