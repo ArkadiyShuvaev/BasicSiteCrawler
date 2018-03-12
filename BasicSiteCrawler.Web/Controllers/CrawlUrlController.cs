@@ -21,13 +21,19 @@ namespace BasicSiteCrawler.Web.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				//_crawlUrlHub.Clients.All.SendAsync("Send", startingUrl.StartingUrl);
 				_crawlMediator.StartCrawl(startingUrl.StartingUrl);
 
 				return Ok(true);
 			}
 
 			return BadRequest(ModelState);
+		}
+
+		[HttpPost("StopCrawl")]
+		public IActionResult StopCrawl()
+		{
+			_crawlMediator.StopCrawl();
+			return Ok(true);
 		}
 
 

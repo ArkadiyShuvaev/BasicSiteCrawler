@@ -27,7 +27,12 @@ namespace BasicSiteCrawler.Services
 			_storage = storage;
 		}
 
-		
+		public void ResetSubscriptions()
+		{
+			UrlCrawled = null;
+		}
+
+
 		public void CrawlUrl(string startingUrl)
 		{
 			if (startingUrl == null) throw new ArgumentNullException(nameof(startingUrl));

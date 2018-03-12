@@ -7,7 +7,7 @@ export default class StaringUrlForm extends React.Component<IStaringUrlFormProps
         
         return (
             <form>
-                <fieldset disabled={this.props.isInputDisabled}>
+                <fieldset disabled={this.props.isUrlProcessing}>
                     <div className="form-group">
                         <label htmlFor="urlInputText">Enter starting url:</label>
                         <input id="urlInputText"
@@ -18,11 +18,18 @@ export default class StaringUrlForm extends React.Component<IStaringUrlFormProps
                             placeholder="http://company.com/"
                             autoFocus={true} />
                     </div>
-                    <input type="button"
-                        value="Submit"
-                        className="btn btn-primary"
-                        onClick={this.props.onBtnClick} />
                 </fieldset>
+                <input type="button"
+                    value="Start"
+                    hidden={!this.props.isUrlProcessing}
+                    className="btn btn-primary"
+                    onClick={this.props.onStartBtnClick} />
+
+                <input type="button"
+                    value="Stop"
+                    hidden={!this.props.isUrlProcessing}    
+                    className="btn btn-primary"
+                    onClick={this.props.onStopBtnClick} />
             </form>
             );
     }

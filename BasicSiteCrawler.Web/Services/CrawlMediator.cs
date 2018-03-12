@@ -13,6 +13,7 @@ namespace BasicSiteCrawler.Web.Services
     public class CrawlMediator
     {
 	    private readonly IHubContext<CrawlUrlHub> _crawlUrlHub;
+	    private BasicCrawler _crawlerService;
 
 	    public CrawlMediator(IHubContext<CrawlUrlHub> crawlUrlHub)
 	    {
@@ -29,15 +30,20 @@ namespace BasicSiteCrawler.Web.Services
 			    IHtmlParser htmlParser = new SimpleHtmlParser();
 			    var temporaryUrlStorage = new UrlMemoryStorage();
 
-			    var crawlerService = new BasicCrawler(networkProvider, logger, htmlParser,
+			    _crawlerService = new BasicCrawler(networkProvider, logger, htmlParser,
 				    temporaryUrlStorage);
 
-			    crawlerService.UrlCrawled += CrawlerServiceOnUrlCrawled;
+			    _crawlerService.UrlCrawled += CrawlerServiceOnUrlCrawled;
 
-			    crawlerService.CrawlUrl(startUrlForCrawl);
+			    _crawlerService.CrawlUrl(startUrlForCrawl);
 				
 		    }
 		}
+
+	    public void StopCrawl()
+	    {
+			_crawlerService.ResetSubscriptions();
+	    }
 
 	    private void CrawlerServiceOnUrlCrawled(object sender, CrawlingUrlArgs crawlingUrlArgs)
 	    {

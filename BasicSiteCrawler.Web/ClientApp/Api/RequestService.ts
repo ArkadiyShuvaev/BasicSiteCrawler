@@ -1,6 +1,6 @@
 ﻿export default class RequestService {
     
-    async postAsync(url: string, postBody: string):Promise<any> {
+    async postAsync(url: string, postBody: string = ""):Promise<any> {
 
         const myInit: RequestInit = {
             body: postBody,

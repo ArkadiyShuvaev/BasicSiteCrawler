@@ -1,18 +1,21 @@
-﻿export interface IFormData {
+﻿import {UrlCollection} from "../UrlCollection";
+
+export interface IFormData {
     inputFormValue: string;
-    isInputDisabled: boolean;
+    isUrlProcessing: boolean;
 }
 
 export interface IAppState {
-    urls: Array<IUrl>;
+    urls: UrlCollection;
     formData: IFormData;
 }
 
 export interface IStaringUrlFormProps {
     inputFormValue: string;
-    isInputDisabled: boolean;
+    isUrlProcessing: boolean;
     onChange: (e: React.FormEvent<HTMLInputElement>) => void;
-    onBtnClick: (e: React.FormEvent<HTMLInputElement>) => void;
+    onStartBtnClick: (e: React.FormEvent<HTMLInputElement>) => void;
+    onStopBtnClick: (e: React.FormEvent<HTMLInputElement>) => void;
 }
 
 export interface IUrlListRowProps {
