@@ -19,8 +19,6 @@ namespace BasicSiteCrawler.Services
 			
 			_streamWriter.WriteLine(result);
 			_streamWriter.Flush();
-
-			Console.WriteLine(result);
 		}
 	}
 }

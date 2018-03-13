@@ -2,8 +2,10 @@
 using System.IO;
 using System.Net.Http;
 using BasicSiteCrawler.Abstractions;
+using BasicSiteCrawler.Library.Services;
 using BasicSiteCrawler.Models;
 using BasicSiteCrawler.Services;
+using Microsoft.Extensions.Logging;
 
 namespace BasicSiteCrawler.ConsoleClient
 {
@@ -14,8 +16,9 @@ namespace BasicSiteCrawler.ConsoleClient
 		static void Main(string[] args)
 		{
 			// TODO Implement Logger for Net Core
-			var logger = new DefaultLogger();
-
+			var loggerFactory = new LoggerFactory().AddConsole(LogLevel.Trace);
+			var logger = loggerFactory.CreateLogger<BasicCrawler>();
+			
 #if DEBUG
 			args = new[] { "http://www.bbc.com/" };
 			//args = new[] { "http://www.vk.com/" };
@@ -27,7 +30,7 @@ namespace BasicSiteCrawler.ConsoleClient
 				{
 					const string errMsg = "Please define a start link.";
 					Console.WriteLine(errMsg);
-					logger.WriteError(errMsg);
+					logger.LogError(errMsg);
 					return;
 				}
 
@@ -37,12 +40,12 @@ namespace BasicSiteCrawler.ConsoleClient
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
-				logger.WriteError(e.ToString());
+				logger.LogCritical(e.ToString());
 				throw;
 			}
 		}
 
-		private static void MainImpl(ILogger logger, string startLink)
+		private static void MainImpl(ILogger<BasicCrawler> logger, string startLink)
 		{
 			if (File.Exists(ResultLog))
 			{

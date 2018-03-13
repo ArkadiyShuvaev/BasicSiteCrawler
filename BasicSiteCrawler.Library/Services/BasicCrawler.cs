@@ -2,18 +2,20 @@
 using System.Linq;
 using BasicSiteCrawler.Abstractions;
 using BasicSiteCrawler.Models;
+using BasicSiteCrawler.Services;
+using Microsoft.Extensions.Logging;
 
-namespace BasicSiteCrawler.Services
+namespace BasicSiteCrawler.Library.Services
 {
 	public sealed class BasicCrawler
 	{
 		private readonly INetworkProvider _networkProvider;
-		private readonly ILogger _logger;
+		private readonly ILogger<BasicCrawler> _logger;
 		private readonly IHtmlParser _htmlParser;
 		private readonly IUrlStorage _storage;
 		public event EventHandler<CrawlingUrlArgs> UrlCrawled = (sender, args) => { };
 		
-		public BasicCrawler(INetworkProvider networkProvider, ILogger logger, IHtmlParser htmlParser,
+		public BasicCrawler(INetworkProvider networkProvider, ILogger<BasicCrawler> logger, IHtmlParser htmlParser,
 			IUrlStorage storage)
 		{
 			if (networkProvider == null) throw new ArgumentNullException(nameof(networkProvider));
@@ -43,7 +45,7 @@ namespace BasicSiteCrawler.Services
 			if (!result)
 			{
 				var message = $"The starting url '{startingUrl}' is wrong";
-				_logger.WriteError(message);
+				_logger.LogError(message);
 				throw new Exception(message);
 			}
 
@@ -72,7 +74,7 @@ namespace BasicSiteCrawler.Services
 						_storage.MarkUrlAsCrawled(u.Id);
 						_storage.MarkUrlAsIncorrected(u.Id);
 
-						_logger.WriteWarning($"The '{url}' url cannot be processed.");
+						_logger.LogWarning($"The '{url}' url cannot be processed.");
 
 						return null;
 					})
@@ -89,12 +91,13 @@ namespace BasicSiteCrawler.Services
 				{
 					try
 					{
+						_logger.LogTrace($"Processing '{task.CrawledUrl}' url...");
 						var pageBody = task.PageBodyTask.Result;
 						ProcessPageBody(pageBody, task.CrawledUrl);
 					}
 					catch (Exception ex)
 					{
-						_logger.WriteError(ex.ToString());
+						_logger.LogError(ex.ToString());
 					}
 				}
 			}
