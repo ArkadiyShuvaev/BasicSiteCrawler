@@ -1,4 +1,4 @@
-﻿namespace BasicSiteCrawler.Models
+﻿namespace BasicSiteCrawler.Library.Models
 {
 	public class CrawlingUrl
 	{

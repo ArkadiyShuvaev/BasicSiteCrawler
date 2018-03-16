@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
-using BasicSiteCrawler.Models;
+using BasicSiteCrawler.Library.Models;
 
-namespace BasicSiteCrawler.Abstractions
+namespace BasicSiteCrawler.Library.Abstractions
 {
 	public interface IUrlStorage
 	{
 		bool TryAdd(CrawlingUrlForCreation url);
-		IEnumerable<CrawlingUrl> GetUncrawledUrls();
-		bool IsUncrawledUrlExist { get; }
+		IEnumerable<CrawlingUrl> GetUrlsForCrawl();
 		void MarkUrlAsCrawled(int id);
-		//void MarkUrlAsProcessed(int id);
 		void MarkUrlAsIncorrected(int id);
 	}
 }

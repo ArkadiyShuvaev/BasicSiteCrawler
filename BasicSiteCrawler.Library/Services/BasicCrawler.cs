@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using BasicSiteCrawler.Abstractions;
-using BasicSiteCrawler.Models;
-using BasicSiteCrawler.Services;
+using BasicSiteCrawler.Library.Abstractions;
+using BasicSiteCrawler.Library.Models;
 using Microsoft.Extensions.Logging;
 
 namespace BasicSiteCrawler.Library.Services
@@ -31,7 +31,7 @@ namespace BasicSiteCrawler.Library.Services
 
 		public void ResetSubscriptions()
 		{
-			UrlCrawled = null;
+			UrlCrawled = (sender, args) => { };
 		}
 
 
@@ -55,10 +55,9 @@ namespace BasicSiteCrawler.Library.Services
 
 		private void ProcessUncrawledUrls()
 		{
-			while (_storage.IsUncrawledUrlExist)
+			List<CrawlingUrl> uncrawledUrls;
+			while ((uncrawledUrls = _storage.GetUrlsForCrawl().ToList()).Count > 0)
 			{
-				var uncrawledUrls = _storage.GetUncrawledUrls().ToList();
-
 				var items = uncrawledUrls
 					.Select(u =>
 					{
@@ -97,6 +96,7 @@ namespace BasicSiteCrawler.Library.Services
 					}
 					catch (Exception ex)
 					{
+						_storage.MarkUrlAsIncorrected(task.CrawledUrl.Id);
 						_logger.LogError(ex.ToString());
 					}
 				}
@@ -118,6 +118,11 @@ namespace BasicSiteCrawler.Library.Services
 		private void OnUrlCrawled(CrawlingUrlArgs args)
 		{
 			UrlCrawled.Invoke(this, args);
+		}
+
+		~BasicCrawler()
+		{
+			_logger.LogInformation("~basicCrawler");
 		}
 	}
 }

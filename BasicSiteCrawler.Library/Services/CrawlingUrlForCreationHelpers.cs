@@ -1,7 +1,7 @@
 ﻿using System;
-using BasicSiteCrawler.Models;
+using BasicSiteCrawler.Library.Models;
 
-namespace BasicSiteCrawler.Services
+namespace BasicSiteCrawler.Library.Services
 {
 	public static class CrawlingUrlForCreationHelpers
 	{

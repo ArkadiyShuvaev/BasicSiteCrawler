@@ -21,14 +21,12 @@ export default class StaringUrlForm extends React.Component<IStaringUrlFormProps
                 </fieldset>
                 <input type="button"
                     value="Start"
-                    hidden={!this.props.isUrlProcessing}
-                    className="btn btn-primary"
+                    className={this.props.isUrlProcessing ? "btn btn-primary hidden" : "btn btn-primary"}
                     onClick={this.props.onStartBtnClick} />
 
                 <input type="button"
                     value="Stop"
-                    hidden={!this.props.isUrlProcessing}    
-                    className="btn btn-primary"
+                    className= {this.props.isUrlProcessing ? "btn btn-primary" : "btn btn-primary hidden"}
                     onClick={this.props.onStopBtnClick} />
             </form>
             );

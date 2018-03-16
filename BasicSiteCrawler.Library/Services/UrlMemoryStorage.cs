@@ -2,10 +2,10 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using BasicSiteCrawler.Abstractions;
-using BasicSiteCrawler.Models;
+using BasicSiteCrawler.Library.Abstractions;
+using BasicSiteCrawler.Library.Models;
 
-namespace BasicSiteCrawler.Services
+namespace BasicSiteCrawler.Library.Services
 {
 	public class UrlMemoryStorage : IUrlStorage
 	{
@@ -46,12 +46,10 @@ namespace BasicSiteCrawler.Services
 			return _urls.Count + 1;
 		}
 
-		public IEnumerable<CrawlingUrl> GetUncrawledUrls()
+		public IEnumerable<CrawlingUrl> GetUrlsForCrawl()
 		{
-			return _urls.Where(u => !u.IsCrawled);
+			return _urls.Where(u => !u.IsCrawled && !u.IsIncorrected);
 		}
-
-		public bool IsUncrawledUrlExist => _urls.Any(u => u.IsCrawled == false);
 		
 		public void MarkUrlAsCrawled(int id)
 		{

@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using BasicSiteCrawler.Abstractions;
+using BasicSiteCrawler.Library.Abstractions;
+using BasicSiteCrawler.Library.Models;
 using BasicSiteCrawler.Library.Services;
-using BasicSiteCrawler.Models;
-using BasicSiteCrawler.Services;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 

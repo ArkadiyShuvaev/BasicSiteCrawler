@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using BasicSiteCrawler.Abstractions;
+using BasicSiteCrawler.Library.Abstractions;
 
-namespace BasicSiteCrawler.Services
+namespace BasicSiteCrawler.Library.Services
 {
 	public class NetworkProvider : INetworkProvider
 	{

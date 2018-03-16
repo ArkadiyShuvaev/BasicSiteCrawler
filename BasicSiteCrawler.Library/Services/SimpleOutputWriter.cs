@@ -1,8 +1,8 @@
 using System;
 using System.IO;
-using BasicSiteCrawler.Abstractions;
+using BasicSiteCrawler.Library.Abstractions;
 
-namespace BasicSiteCrawler.Services
+namespace BasicSiteCrawler.Library.Services
 {
 	public class SimpleOutputWriter : IOutputWriter
 	{

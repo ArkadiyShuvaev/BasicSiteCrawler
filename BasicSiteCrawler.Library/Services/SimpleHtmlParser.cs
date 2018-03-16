@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BasicSiteCrawler.Abstractions;
+using BasicSiteCrawler.Library.Abstractions;
 using HtmlAgilityPack;
 
-namespace BasicSiteCrawler.Services
+namespace BasicSiteCrawler.Library.Services
 {
 	public class SimpleHtmlParser : IHtmlParser
 	{

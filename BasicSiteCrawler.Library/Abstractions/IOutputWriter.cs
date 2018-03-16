@@ -1,4 +1,4 @@
-﻿namespace BasicSiteCrawler.Abstractions
+﻿namespace BasicSiteCrawler.Library.Abstractions
 {
 	public interface IOutputWriter
 	{

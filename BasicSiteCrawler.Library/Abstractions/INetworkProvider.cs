@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace BasicSiteCrawler.Abstractions
+namespace BasicSiteCrawler.Library.Abstractions
 {
 	public interface INetworkProvider
 	{

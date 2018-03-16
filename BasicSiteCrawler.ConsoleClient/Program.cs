@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
-using BasicSiteCrawler.Abstractions;
+using BasicSiteCrawler.Library.Abstractions;
+using BasicSiteCrawler.Library.Models;
 using BasicSiteCrawler.Library.Services;
-using BasicSiteCrawler.Models;
-using BasicSiteCrawler.Services;
 using Microsoft.Extensions.Logging;
 
 namespace BasicSiteCrawler.ConsoleClient
@@ -18,9 +17,10 @@ namespace BasicSiteCrawler.ConsoleClient
 			// TODO Implement Logger for Net Core
 			var loggerFactory = new LoggerFactory().AddConsole(LogLevel.Trace);
 			var logger = loggerFactory.CreateLogger<BasicCrawler>();
-			
+
 #if DEBUG
-			args = new[] { "http://www.bbc.com/" };
+			//args = new[] { "http://www.bbc.com/" };
+			args = new[] { "http2://www.bbc.com/" };
 			//args = new[] { "http://www.vk.com/" };
 #endif
 
@@ -66,8 +66,6 @@ namespace BasicSiteCrawler.ConsoleClient
 				crawlerService.UrlCrawled += (sender, args) => CrawlerServiceOnUrlCrawled(args, simpleOutputWriter);
 
 				crawlerService.CrawlUrl(startLink);
-				
-				Console.ReadKey();
 			}
 		}
 
