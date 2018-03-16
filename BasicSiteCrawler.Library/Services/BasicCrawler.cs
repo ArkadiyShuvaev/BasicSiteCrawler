@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using BasicSiteCrawler.Library.Abstractions;
 using BasicSiteCrawler.Library.Models;
 using Microsoft.Extensions.Logging;
@@ -32,6 +34,15 @@ namespace BasicSiteCrawler.Library.Services
 		public void ResetSubscriptions()
 		{
 			UrlCrawled = (sender, args) => { };
+		}
+
+		public Task<bool> CrawUrlAsync(string startingUrl, CancellationToken cancellationTokenToken)
+		{
+			return Task.Factory.StartNew(() =>
+			{
+				CrawlUrl(startingUrl);
+				return !_storage.GetIncorrectedUrls().Any();
+			}, cancellationTokenToken);
 		}
 
 

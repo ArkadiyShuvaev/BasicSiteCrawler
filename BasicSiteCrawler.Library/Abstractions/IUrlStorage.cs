@@ -9,5 +9,6 @@ namespace BasicSiteCrawler.Library.Abstractions
 		IEnumerable<CrawlingUrl> GetUrlsForCrawl();
 		void MarkUrlAsCrawled(int id);
 		void MarkUrlAsIncorrected(int id);
+		IEnumerable<CrawlingUrl> GetIncorrectedUrls();
 	}
 }

@@ -71,6 +71,11 @@ namespace BasicSiteCrawler.Library.Services
 			existingUrl.IsIncorrected = true;
 		}
 
+		public IEnumerable<CrawlingUrl> GetIncorrectedUrls()
+		{
+			return _urls.Where(u => u.IsIncorrected);
+		}
+
 		private CrawlingUrl GetExistingUrlAndThrowIfNoExist(int id)
 		{
 			var existingUrl = _urls.FirstOrDefault(u => u.Id == id);

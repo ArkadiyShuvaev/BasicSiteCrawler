@@ -30,6 +30,7 @@ namespace BasicSiteCrawler.Web.Controllers
 				return Ok(true);
 			}
 
+			//return false;
 			return BadRequest(ModelState);
 		}
 

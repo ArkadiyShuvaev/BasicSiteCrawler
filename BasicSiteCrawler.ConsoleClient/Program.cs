@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using System.Threading;
 using BasicSiteCrawler.Library.Abstractions;
 using BasicSiteCrawler.Library.Models;
 using BasicSiteCrawler.Library.Services;
@@ -14,14 +15,13 @@ namespace BasicSiteCrawler.ConsoleClient
 
 		static void Main(string[] args)
 		{
-			// TODO Implement Logger for Net Core
 			var loggerFactory = new LoggerFactory().AddConsole(LogLevel.Trace);
 			var logger = loggerFactory.CreateLogger<BasicCrawler>();
 
 #if DEBUG
 			//args = new[] { "http://www.bbc.com/" };
-			args = new[] { "http2://www.bbc.com/" };
-			//args = new[] { "http://www.vk.com/" };
+			//args = new[] { "wrongProtocol://www.bbc.com/" };
+			args = new[] { "http://127.0.0.1" };
 #endif
 
 			try
@@ -64,7 +64,7 @@ namespace BasicSiteCrawler.ConsoleClient
 					temporaryUrlStorage);
 
 				crawlerService.UrlCrawled += (sender, args) => CrawlerServiceOnUrlCrawled(args, simpleOutputWriter);
-
+				
 				crawlerService.CrawlUrl(startLink);
 			}
 		}
